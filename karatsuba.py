@@ -1,5 +1,3 @@
-
-
 def karatsuba(num1, num2):
     """ 
     Multiplies two numbers using the Karatsuba algorithm
@@ -21,7 +19,6 @@ def karatsuba(num1, num2):
     if n == 1:
         return str(int(num1)*int(num2))
 
-
     # Split into smaller subproblems
     midpoint = n / 2
     a = num1[:midpoint]
@@ -41,7 +38,6 @@ def karatsuba(num1, num2):
     p1 = karatsuba(a, c)
     p2 = karatsuba(b, d)
     p3 = karatsuba(str(int(a)+int(b)), str(int(c) + int(d)))
-
 
     # Compute the sum using recursive returns
     term1 = p1+'0'*(2*(n-midpoint))
