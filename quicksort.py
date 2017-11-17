@@ -13,6 +13,7 @@ def quicksort(array, left = 0, right = None):
     def choose_pivot(array, left, right, method = 'RANDOM'):
         if method == 'RANDOM':
             return np.random.randint(left, right+1)
+
     def partition(array, pivot, left, right):
         def swap(array, i, j):
             tmp = array[i]
