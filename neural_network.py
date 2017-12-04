@@ -26,9 +26,10 @@ class NeuralNetwork():
             None - Initializes instance variables
         """
 
-        #TODO: set this to sqrt( 2 / m_(i-1)) with m_(i-1) as the number of features in the last layer
         self.params = {}
         L = len(self.layer_dims)
+
+        #TODO: set this to sqrt( 2 / m_(i-1)) with m_(i-1) as the number of features in the last layer
         weight_size = 0.1
 
         # Initialize weights. W1 is the weight matrix from layer 0 to layer 1
@@ -51,14 +52,15 @@ class NeuralNetwork():
             # Save earlier activations
             A_prev = A
 
-
             # Use relu for hidden layers and sigmoid for output
             activation_func = self.sigmoid if l == L - 1 else self.relu
 
+            # Apply linear transformation followed by the activation function
             Z = A_prev @ self.params['W%d' % l]
             A = activation_func(Z)
             assert A.shape == (X.shape[0], self.layer_dims[l])
 
+            # Save the scores and activations for the backwards pass
             self.layer_scores.append(Z)
             self.layer_activations.append(A_prev)
         assert len(self.layer_activations) == len(self.layer_scores)
@@ -81,22 +83,19 @@ class NeuralNetwork():
             RETURNS:
                 dZ - the derivative of the cost function with respect to the output of the linear transformation
             """
+            # For a layer of size L, there should be L activations for each observation
             assert dA.shape == (n, self.layer_dims[l])
-            # print('dA', dA)
 
             if activation == 'sigmoid':
                 # dA times the derivative of the sigmoid
                 activations = self.sigmoid(self.layer_scores[l-1])
-                # print(activations)
                 dZ = dA * activations * (1 - activations)
-                # print(dZ)
             elif activation == 'relu':
                 # dA times derivative of the relu
-                # print('layer scores', self.layer_scores[l-1])
                 dZ = dA * (self.layer_scores[l-1] >= 0)
-                # print('dz', dZ)
-            elif activation == 'tanh':
-                dZ = 0 #TODO: Implement dA times derivative of tanh
+            else:
+                print('Only sigmoid and relu activation functions implemented so far')
+                raise Exception
 
             assert dZ.shape == (n, self.layer_dims[l])
             return dZ
@@ -163,12 +162,12 @@ class NeuralNetwork():
 
 
     def update_weights(self, learning_rate):
+        """
+        This currently implements gradient descent
+        """
         L = self.num_layers
         for l in range(1, L):
-            # print('before weights %d' %l, self.params['W%d' % l])
-            # print('before grads %d' %l, self.grads)
             self.params['W%d' % l] -= learning_rate * self.grads['dW%d' % l]
-            # print('after %d' %l, self.params)
 
     def compute_cost(self, pred, y):
         m = y.shape[1]
@@ -205,8 +204,14 @@ class NeuralNetwork():
         self.initialize_parameters()
         for epoch in range(num_epochs):
             for batch_X, batch_y in get_minibatches(X, y, batch_size):
+
+                # Propagates the input through the neural network to compute a set of predictions and caches the scores and activations
                 pred = self.forward_propagate(batch_X)
+                
+                # Computes the gradients 
                 self.backward_propagate(pred, batch_y)
+                
+                # Uses the gradient to update the parameter weights
                 self.update_weights(learning_rate)
 
             if epoch % 100 == 0:
@@ -233,12 +238,9 @@ def test():
     np.random.seed(1)
 
     # Create moons testing data
-    X, y = make_moons(n_samples = 500, noise = 0.1)
+    X, y = make_moons(n_samples = 5000, noise = 0.1)
     y = y[:, None]
     X = np.hstack((np.ones((X.shape[0], 1)), X))
-    plt.scatter(X[:, 1], X[:, 2])
-    plt.show()
-    return
 
     # Split into training and test
     split = len(X) // 2
