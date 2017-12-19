@@ -161,7 +161,7 @@ class NeuralNetwork():
             self.grads['dW%d' % l] = dW
 
 
-    def update_weights(self, learning_rate):
+    def gradient_descent(self, learning_rate):
         """
         This currently implements gradient descent
         """
@@ -212,7 +212,7 @@ class NeuralNetwork():
                 self.backward_propagate(pred, batch_y)
                 
                 # Uses the gradient to update the parameter weights
-                self.update_weights(learning_rate)
+                self.gradient_descent(learning_rate)
 
             if epoch % 100 == 0:
                 full_pred = self.forward_propagate(X)
