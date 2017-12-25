@@ -1,5 +1,7 @@
 from collections import deque
 import numpy as np
+
+
 def bfs(start, is_goal, neighbors):
     """
     Performs breadth-first search on the graph starting from start
@@ -7,8 +9,8 @@ def bfs(start, is_goal, neighbors):
 
     ARGS:
         start (node) - This is the starting node
-        neighbors - (node -> List[node]) - This function takes a node and returns all of its neighbors
-        is_goal - (node -> Bool) - This function returns whether a node is a goal node    
+        neighbors - (node -> List[node]) - Takes a node and returns neighbors
+        is_goal - (node -> Bool) - Returns whether a node is a goal node
 
     RETURNS:
         (bool) - Whether a goal node is reachable from the start node
@@ -37,6 +39,7 @@ def bfs(start, is_goal, neighbors):
                 frontier.append(neighbor)
     return False
 
+
 def test_bfs():
     # Test 1: Searching through a grid
     grid1 = np.array([
@@ -50,6 +53,7 @@ def test_bfs():
             ['.', '.', 'W', 'W'],
             ['.', 'G', 'W', 'G']])
     start = (0, 0)
+
     def neighbor(graph, node):
         def inrange(x, low, high):
             return x >= low and x < high
@@ -58,11 +62,17 @@ def test_bfs():
              (r-1, c-1), (r-1, c), (r-1, c+1),
              (r, c-1),             (r, c+1),
              (r+1, c-1), (r+1, c), (r+1, c+1)]
-        return [(r, c) for r, c in options
-                        if inrange(r, 0, graph.shape[0])
-                        and inrange(c, 0, graph.shape[1])
-                        and graph[r][c] != 'W']
-    assert bfs(start, lambda coords: grid1[coords] == 'G', lambda node: neighbor(grid1, node))
-    assert not bfs(start, lambda coords: grid2[coords] == 'G', lambda node: neighbor(grid2, node))
+        return [(row, col) for row, col in options
+                if inrange(row, 0, graph.shape[0])
+                and inrange(col, 0, graph.shape[1])
+                and graph[row][col] != 'W']
+    assert bfs(start,
+               lambda coords: grid1[coords] == 'G',
+               lambda node: neighbor(grid1, node))
+    assert not bfs(start,
+                   lambda coords: grid2[coords] == 'G',
+                   lambda node: neighbor(grid2, node))
     print 'Tests passed'
+
+
 test_bfs()
